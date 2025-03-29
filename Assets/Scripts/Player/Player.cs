@@ -6,7 +6,7 @@ public class Player : MonoBehaviour {
 
     InputHandler _inputHandler;
 
-    ThirdPersonMovement _thirdPerson;
+    FirstPersonMovement _firstPerson;
 
     [SerializeField] float _moveSpeed = 5.0f;
     [SerializeField] float _rotationSpeed;
@@ -20,16 +20,16 @@ public class Player : MonoBehaviour {
     void Start() {
         _inputHandler = GetComponent<InputHandler>();
 
-        _thirdPerson = new(transform, _inputHandler);
+        _firstPerson = new(transform, _inputHandler);
         Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update() {
-        _thirdPerson.Move(_moveSpeed, _rotationSpeed);
+        _firstPerson.Move(_moveSpeed);
     }
 
     void LateUpdate() {
-        _thirdPerson.CameraFollow(_cinemachineTarget, _bottomClamp, _topClamp, _cameraSensitivity); 
+        _firstPerson.CameraFollow(_cinemachineTarget, _bottomClamp, _topClamp, _cameraSensitivity); 
     }
 }
 

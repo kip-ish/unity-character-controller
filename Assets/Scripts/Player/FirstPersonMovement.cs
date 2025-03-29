@@ -1,24 +1,23 @@
 using UnityEngine;
 
-public class ThirdPersonMovement {
-
+public class FirstPersonMovement {
+    
     Transform _transform;
     InputHandler _input;
     Camera _camera;
 
     Vector3 _movement;
 
-    float _pitch;
     float _yaw;
+    float _pitch;
 
-
-    public ThirdPersonMovement(Transform transform, InputHandler input) {
+    public FirstPersonMovement(Transform transform, InputHandler input) {
         _transform = transform;
         _input = input;
         _camera = Camera.main;
     }
 
-    public void Move(float moveSpeed, float rotationSpeed) {
+    public void Move(float moveSpeed) {
         // get move input from InputHandler class
         _movement = new(_input.MoveNormalized.x, 0.0f, _input.MoveNormalized.y);
 
@@ -31,29 +30,22 @@ public class ThirdPersonMovement {
         
         // move the player
         _transform.position += moveSpeed * Time.deltaTime * moveDir;
-
-        _transform.forward = Vector3.Slerp(_transform.forward, moveDir, 
-        rotationSpeed * Time.deltaTime);
     }
 
-    public void CameraFollow(Transform cameraFollowTransform, 
-    float bottomClamp, float topClamp, float cameraSensitivity) {
-
-        // Note: This camera follow is using Cinemachine 3.0, so make sure to install Cinemachine
-        // to your project. Use Third Person Aim Camera, set tracking target to your player camera root.
-        // Adjust the settings how you like and you're good to go!
+    public void CameraFollow(Transform cameraFollowTransform, float bottomClamp,
+    float topClamp, float cameraSensitivity) {
 
         float threshold = 0.01f;
-        
         if(_input.Look.magnitude > threshold) {
-            _yaw += _input.Look.x * Time.deltaTime * cameraSensitivity;
+            _yaw = _input.Look.x * Time.deltaTime * cameraSensitivity;
             _pitch += -_input.Look.y * Time.deltaTime * cameraSensitivity;
-        }
 
-        _yaw = ClampAngle(_yaw, float.MinValue, float.MaxValue);
-        _pitch = ClampAngle(_pitch, bottomClamp, topClamp);
-        
-        cameraFollowTransform.rotation = Quaternion.Euler(_pitch, _yaw, 0.0f);
+            _yaw = ClampAngle(_yaw, float.MinValue, float.MaxValue);
+            _pitch = ClampAngle(_pitch, bottomClamp, topClamp);
+
+            cameraFollowTransform.localRotation = Quaternion.Euler(_pitch, 0, 0);
+            _transform.Rotate(Vector3.up * _yaw);
+        }
     }
 
     float ClampAngle(float target, float min, float max) {
